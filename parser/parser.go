@@ -22,24 +22,40 @@ func ParseVMFile(fileName string) (err error) {
 	input := bufio.NewScanner(f)
 
 	for input.Scan() {
-		fileLine := input.Text()
-		// val,err := cleanFileLine(fileLine)
-		fmt.Println(fileLine)
+		var fileLineParser FileLineParser = FileLine{input.Text()}
+
+		parsedVMFileLine, err := fileLineParser.ParseVMFileLine()
+
+		if err != nil {
+			return errors.New("failed to parse .vm file line")
+		}
+
+		fmt.Println(parsedVMFileLine)
 	}
 
 	return nil
 }
 
-func cleanFileLine(fileLine string) (cleanedFileLine CleanedFileLine, err error) {
-	return "", nil
-}
+// func cleanFileLine(fileLine string) Cl (cleanedFileLine string, err error) {
+// 	isLineCommented := strings.HasPrefix(fileLine, "//")
 
-func getCommandType(cleanedFileLine CleanedFileLine) (commandType CommandType, err error) {
-	return "", nil
-}
-func getCommandArg1(cleanedFileLine CleanedFileLine) (firstCommandArgument FirstCommandArgument, err error) {
-	return "", nil
-}
-func getCommandArg2(cleanedFileLine CleanedFileLine) (secondCommandArgument SecondCommandArgument, err error) {
-	return "", nil
-}
+// 	if len(fileLine) < 1 {
+// 		return "", errors.New("file line is empty")
+// 	}
+
+// 	if isLineCommented {
+// 		return "", errors.New("file line is commented")
+// 	}
+
+// 	return fileLine, nil
+// }
+
+// func getCommandType(cleanedFileLine string) (commandType string, err error) {
+// 	return "", nil
+// }
+// func getCommandArg1(cleanedFileLine string) (firstCommandArgument string, err error) {
+// 	return "", nil
+// }
+// func getCommandArg2(cleanedFileLine string) (secondCommandArgument string, err error) {
+// 	return "", nil
+// }
