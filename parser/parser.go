@@ -8,54 +8,56 @@ import (
 	"path"
 )
 
-// ParseVMFile parses a vm file, cleans its lines (remove whitespace, comments) and stores commands and arguments
-func ParseVMFile(fileName string) (err error) {
+// ParsedCommand represents decomposed commands and their argument(s), as extracted from input file lines
+type ParsedCommand struct {
+	commandType string
+	args        []string
+}
+
+// Parser parses a vm file, cleans its lines (remove whitespace, comments) and stores commands and arguments
+func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
 	folderPath := "./vm-files/"
 	filePath := path.Join(folderPath, fileName+".vm")
 
 	f, err := os.Open(filePath)
 
 	if err != nil {
-		return errors.New("error opening file: " + fileName)
+		return parsedCommands, errors.New("error opening file: " + fileName)
 	}
 
 	input := bufio.NewScanner(f)
 
 	for input.Scan() {
-		var fileLineParser FileLineParser = FileLine{input.Text()}
 
-		parsedVMFileLine, err := fileLineParser.ParseVMFileLine()
+		fileLine := input.Text()
+
+		parsedComponents, err := parseFileLine(fileLine)
 
 		if err != nil {
-			return errors.New("failed to parse .vm file line")
+			fmt.Println(err)
+			continue
 		}
 
-		fmt.Println(parsedVMFileLine)
+		firstElementFromParsedComponents := parsedComponents[0]
+		currentCommandType := vmCommandsTable[firstElementFromParsedComponents]
+
+		currentCommandFirstArgument, err := getCommandFirstArgument(currentCommandType, parsedComponents)
+
+		if err != nil {
+			return parsedCommands, err
+		}
+
+		currentCommandSecondArgument, err := getCommandSecondArgument(currentCommandType, parsedComponents)
+
+		if err != nil {
+			// if no 2nd arguments exists, append only command type name and first arg
+			parsedCommands = append(parsedCommands, ParsedCommand{commandType: currentCommandType, args: []string{currentCommandFirstArgument}})
+		} else {
+			// append command type name and two args
+			parsedCommands = append(parsedCommands, ParsedCommand{commandType: currentCommandType, args: []string{currentCommandFirstArgument, currentCommandSecondArgument}})
+		}
+
 	}
 
-	return nil
+	return parsedCommands, nil
 }
-
-// func cleanFileLine(fileLine string) Cl (cleanedFileLine string, err error) {
-// 	isLineCommented := strings.HasPrefix(fileLine, "//")
-
-// 	if len(fileLine) < 1 {
-// 		return "", errors.New("file line is empty")
-// 	}
-
-// 	if isLineCommented {
-// 		return "", errors.New("file line is commented")
-// 	}
-
-// 	return fileLine, nil
-// }
-
-// func getCommandType(cleanedFileLine string) (commandType string, err error) {
-// 	return "", nil
-// }
-// func getCommandArg1(cleanedFileLine string) (firstCommandArgument string, err error) {
-// 	return "", nil
-// }
-// func getCommandArg2(cleanedFileLine string) (secondCommandArgument string, err error) {
-// 	return "", nil
-// }
