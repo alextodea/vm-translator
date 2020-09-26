@@ -3,20 +3,19 @@ package parser
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"path"
 )
 
 // ParsedCommand represents decomposed commands and their argument(s), as extracted from input file lines
 type ParsedCommand struct {
-	commandType string
-	args        []string
+	CommandType string
+	Args        []string
 }
 
 // Parser parses a vm file, cleans its lines (remove whitespace, comments) and stores commands and arguments
 func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
-	folderPath := "./vm-files/"
+	folderPath := "./data/vm-files/"
 	filePath := path.Join(folderPath, fileName+".vm")
 
 	f, err := os.Open(filePath)
@@ -34,7 +33,6 @@ func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
 		parsedComponents, err := parseFileLine(fileLine)
 
 		if err != nil {
-			fmt.Println(err)
 			continue
 		}
 
@@ -51,10 +49,10 @@ func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
 
 		if err != nil {
 			// if no 2nd arguments exists, append only command type name and first arg
-			parsedCommands = append(parsedCommands, ParsedCommand{commandType: currentCommandType, args: []string{currentCommandFirstArgument}})
+			parsedCommands = append(parsedCommands, ParsedCommand{CommandType: currentCommandType, Args: []string{currentCommandFirstArgument}})
 		} else {
 			// append command type name and two args
-			parsedCommands = append(parsedCommands, ParsedCommand{commandType: currentCommandType, args: []string{currentCommandFirstArgument, currentCommandSecondArgument}})
+			parsedCommands = append(parsedCommands, ParsedCommand{CommandType: currentCommandType, Args: []string{currentCommandFirstArgument, currentCommandSecondArgument}})
 		}
 
 	}
