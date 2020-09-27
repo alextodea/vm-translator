@@ -25,8 +25,8 @@ func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, in
 
 		switch commandType {
 		case "C_PUSH":
-			// 	fallthrough
-			// case "C_POP":
+			fallthrough
+		case "C_POP":
 			secondCommandArg := vmCommand.Args[1]
 
 			assemblyCommand = memoryCommands[commandType][firstCommandArg](firstCommandArg, secondCommandArg)

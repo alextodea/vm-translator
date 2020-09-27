@@ -11,16 +11,40 @@ var memoryCommands = map[string]map[string]func(string, string) string{
 		"this":     pushMemorySegmentValueToStack,
 		"that":     pushMemorySegmentValueToStack,
 	},
-	// 	"C_POP": {
-	// 		"constant": pushConstantToStack,
-	// 		"pointer":  pushConstantToStack,
-	// 		"temp":     pushConstantToStack,
-	// 		"argument": pushConstantToStack,
-	// 		"local":    pushConstantToStack,
-	// 		"static":   pushConstantToStack,
-	// 		"this":     pushConstantToStack,
-	// 		"that":     pushConstantToStack,
-	// 	},
+	"C_POP": {
+		"constant": popConstantFromStack,
+		"pointer":  popPointerFromStack,
+		"temp":     popTempFromStack,
+		"argument": popMemorySegmentValueFromStack,
+		"local":    popMemorySegmentValueFromStack,
+		"static":   popMemorySegmentValueFromStack,
+		"this":     popMemorySegmentValueFromStack,
+		"that":     popMemorySegmentValueFromStack,
+	},
+}
+
+func popMemorySegmentValueFromStack(segmentName string, segmentIndex string) string {
+	commentedLine := popCommandCommentedLine(segmentName, segmentIndex)
+	storeDataRegisterValueToSegment := "@" + assemblySegmentNotations[segmentName] + "\nA=M+" + segmentIndex + "\nM=D\n"
+	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToSegment
+}
+
+func popTempFromStack(firstCommandArg string, tempIndex string) string {
+	commentedLine := popCommandCommentedLine(firstCommandArg, tempIndex)
+	storeDataRegisterValueToTemp := "@Temp" + tempIndex + "\nM=D\n"
+	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToTemp
+}
+
+func popPointerFromStack(firstCommandArg string, pointerIndex string) string {
+	commentedLine := popCommandCommentedLine(firstCommandArg, pointerIndex)
+	storeDataRegisterValueToSegment := "@" + pointerSegments[pointerIndex] + "\nM=D\n"
+	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToSegment
+}
+
+func popConstantFromStack(firstCommandArg string, constantValue string) string {
+	commentedLine := popCommandCommentedLine(firstCommandArg, constantValue)
+	storeDataRegisterValueToConstantAddress := "@" + constantValue + "\nM=D\n"
+	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToConstantAddress
 }
 
 func pushConstantToStack(firstCommandArg string, constantValue string) string {
@@ -51,8 +75,17 @@ func assemblySnippetPushValueToStack() string {
 	return "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
 }
 
+// stores stack value in D register and pops it out
+func assemblySnippetPopValueFromStack() string {
+	return "@SP\nA=M\nD=M\n@SP\nM=M-1\n"
+}
+
 func pushCommandCommentedLine(firstCommandArg string, secondCommandArg string) string {
-	return "//push" + firstCommandArg + secondCommandArg + "\n"
+	return "// push" + firstCommandArg + secondCommandArg + "\n"
+}
+
+func popCommandCommentedLine(firstCommandArg string, secondCommandArg string) string {
+	return "// pop" + firstCommandArg + secondCommandArg + "\n"
 }
 
 var assemblySegmentNotations = map[string]string{
