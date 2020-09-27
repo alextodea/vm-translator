@@ -17,23 +17,23 @@ func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, in
 		return err
 	}
 
+	var assemblyCommand string
+
 	for _, vmCommand := range parsedCommands {
 		commandType := vmCommand.CommandType
 		firstCommandArg := vmCommand.Args[0]
 
-		if commandType == "C_ARITHMETIC" {
-			writeArithmetic(commandType, firstCommandArg)
-		} else if commandType == "C_PUSH" || commandType == "C_POP" {
+		switch commandType {
+		case "C_PUSH":
+			// 	fallthrough
+			// case "C_POP":
 			secondCommandArg := vmCommand.Args[1]
-			assemblySnippet, err := writePushPop(commandType, firstCommandArg, secondCommandArg)
 
-			if err != nil {
-				return err
-			}
-
-			outputFile.WriteString(assemblySnippet)
+			assemblyCommand = memoryCommands[commandType][firstCommandArg](firstCommandArg, secondCommandArg)
 		}
+		outputFile.WriteString(assemblyCommand)
 	}
+
 	outputFile.Close()
 	return nil
 }
