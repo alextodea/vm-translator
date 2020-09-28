@@ -3,7 +3,8 @@ package codewriter
 
 import (
 	"os"
-	parser "vm-translator/parser"
+
+	parser "github.com/alextodea/vm-translator/parser"
 )
 
 // TranslateVMInstructionsToAssembly translates VM commands into Hack assembly code.

@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	codeWriter "vm-translator/codeWriter"
-	parser "vm-translator/parser"
+
+	codeWriter "github.com/alextodea/vm-translator/codeWriter"
+	parser "github.com/alextodea/vm-translator/parser"
 )
 
 func main() {
