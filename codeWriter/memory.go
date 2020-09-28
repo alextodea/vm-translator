@@ -2,90 +2,87 @@ package codewriter
 
 var memoryCommands = map[string]map[string]func(string, string) string{
 	"C_PUSH": {
-		"constant": pushConstantToStack,
-		"pointer":  pushPointerToStack,
-		"temp":     pushTempToStack,
-		"argument": pushMemorySegmentValueToStack,
-		"local":    pushMemorySegmentValueToStack,
-		"static":   pushMemorySegmentValueToStack,
-		"this":     pushMemorySegmentValueToStack,
-		"that":     pushMemorySegmentValueToStack,
+		"constant": pushConstant,
+		"pointer":  pushPointer,
+		"temp":     pushTemp,
+		"argument": pushMemorySegment,
+		"local":    pushMemorySegment,
+		"static":   pushStatic,
+		"this":     pushMemorySegment,
+		"that":     pushMemorySegment,
 	},
 	"C_POP": {
-		"constant": popConstantFromStack,
-		"pointer":  popPointerFromStack,
-		"temp":     popTempFromStack,
-		"argument": popMemorySegmentValueFromStack,
-		"local":    popMemorySegmentValueFromStack,
-		"static":   popMemorySegmentValueFromStack,
-		"this":     popMemorySegmentValueFromStack,
-		"that":     popMemorySegmentValueFromStack,
+		"constant": popConstant,
+		"pointer":  popPointer,
+		"temp":     popTemp,
+		"argument": popMemorySegment,
+		"local":    popMemorySegment,
+		"static":   popStatic,
+		"this":     popMemorySegment,
+		"that":     popMemorySegment,
 	},
 }
 
-func popMemorySegmentValueFromStack(segmentName string, segmentIndex string) string {
-	commentedLine := popCommandCommentedLine(segmentName, segmentIndex)
-	storeDataRegisterValueToSegment := "@" + assemblySegmentNotations[segmentName] + "\nA=M+" + segmentIndex + "\nM=D\n"
-	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToSegment
+// pop commands
+
+func popStatic(fileName, index string) string {
+	return "@SP\nM=M-1\nA=M\nD=M\n@" + fileName + "." + index + "\nM=D\n"
 }
 
-func popTempFromStack(firstCommandArg string, tempIndex string) string {
-	commentedLine := popCommandCommentedLine(firstCommandArg, tempIndex)
-	storeDataRegisterValueToTemp := "@Temp" + tempIndex + "\nM=D\n"
-	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToTemp
+func popMemorySegment(segmentName string, index string) string {
+	moveValueFromDataRegisterToSegmentAddress := "@" + assemblySegmentNotations[segmentName] + "\nA=A+" + index + "\nM=D\n"
+	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToSegmentAddress
 }
 
-func popPointerFromStack(firstCommandArg string, pointerIndex string) string {
-	commentedLine := popCommandCommentedLine(firstCommandArg, pointerIndex)
-	storeDataRegisterValueToSegment := "@" + pointerSegments[pointerIndex] + "\nM=D\n"
-	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToSegment
+func popTemp(segmentName string, index string) string {
+	moveValueFromDataRegisterToTempAddress := "@" + assemblySegmentNotations[segmentName] + index + "\nM=D\n"
+	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToTempAddress
 }
 
-func popConstantFromStack(firstCommandArg string, constantValue string) string {
-	commentedLine := popCommandCommentedLine(firstCommandArg, constantValue)
-	storeDataRegisterValueToConstantAddress := "@" + constantValue + "\nM=D\n"
-	return commentedLine + assemblySnippetPopValueFromStack() + storeDataRegisterValueToConstantAddress
+func popPointer(segmentName string, index string) string {
+	moveValueFromDataRegisterToPointerAddress := "@" + pointerSegments[index] + "\nM=D\n"
+	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToPointerAddress
 }
 
-func pushConstantToStack(firstCommandArg string, constantValue string) string {
-	commentedLine := pushCommandCommentedLine(firstCommandArg, constantValue)
-	storeConstantValueToDataRegister := "@" + constantValue + "\nD=A\n"
-	return commentedLine + storeConstantValueToDataRegister + assemblySnippetPushValueToStack()
+func popConstant(segmentName string, constantValue string) string {
+	moveValueFromDataRegisterToConstantAddress := "@" + constantValue + "\nM=D\n"
+	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToConstantAddress
 }
 
-func pushPointerToStack(firstCommandArg string, pointerIndex string) string {
-	commentedLine := pushCommandCommentedLine(firstCommandArg, pointerIndex)
-	storeSegmentValueToDataRegister := "@" + pointerSegments[pointerIndex] + "\nD=M\n"
-	return commentedLine + storeSegmentValueToDataRegister + assemblySnippetPushValueToStack()
+// push commands
+
+func pushStatic(fileName, index string) string {
+	moveValueFromMemorySegmentToDataRegister := "@" + fileName + "." + index + "\nD=M\n"
+	return moveValueFromMemorySegmentToDataRegister + moveValueFromDataRegisterToStack()
 }
 
-func pushTempToStack(firstCommandArg string, tempIndex string) string {
-	commentedLine := pushCommandCommentedLine(firstCommandArg, tempIndex)
-	storeTempValueToDataRegister := "@Temp" + tempIndex + "\nD=M\n"
-	return commentedLine + storeTempValueToDataRegister + assemblySnippetPushValueToStack()
+func pushConstant(segmentName string, constantValue string) string {
+	moveValueFromConstantToDataRegister := "@" + constantValue + "\nD=A\n"
+	return moveValueFromConstantToDataRegister + moveValueFromDataRegisterToStack()
 }
 
-func pushMemorySegmentValueToStack(segmentName string, segmentIndex string) string {
-	commentedLine := pushCommandCommentedLine(segmentName, segmentIndex)
-	storeSegmentValueToDataRegister := "@" + assemblySegmentNotations[segmentName] + "\nA=M+" + segmentIndex + "\nD=M\n"
-	return commentedLine + storeSegmentValueToDataRegister + assemblySnippetPushValueToStack()
+func pushPointer(segmentName string, index string) string {
+	moveValueFromMemorySegmentToDataRegister := "@" + pointerSegments[index] + "\nD=M\n"
+	return moveValueFromMemorySegmentToDataRegister + moveValueFromDataRegisterToStack()
 }
 
-func assemblySnippetPushValueToStack() string {
+func pushTemp(segmentName string, index string) string {
+	storeTempValueToDataRegister := "@" + assemblySegmentNotations[segmentName] + index + "\nD=M\n"
+	return storeTempValueToDataRegister + moveValueFromDataRegisterToStack()
+}
+
+func pushMemorySegment(segmentName string, segmentIndex string) string {
+	moveValueFromMemorySegmentToDataRegister := "@" + assemblySegmentNotations[segmentName] + "\nA=A+" + segmentIndex + "\nD=M\n"
+	return moveValueFromMemorySegmentToDataRegister + moveValueFromDataRegisterToStack()
+}
+
+func moveValueFromDataRegisterToStack() string {
 	return "@SP\nA=M\nM=D\n@SP\nM=M+1\n"
 }
 
 // stores stack value in D register and pops it out
-func assemblySnippetPopValueFromStack() string {
-	return "@SP\nA=M\nD=M\n@SP\nM=M-1\n"
-}
-
-func pushCommandCommentedLine(firstCommandArg string, secondCommandArg string) string {
-	return "// push" + firstCommandArg + secondCommandArg + "\n"
-}
-
-func popCommandCommentedLine(firstCommandArg string, secondCommandArg string) string {
-	return "// pop" + firstCommandArg + secondCommandArg + "\n"
+func moveValueFromStackToDataRegister() string {
+	return "@SP\nM=M-1\nA=M\nD=M\n"
 }
 
 var assemblySegmentNotations = map[string]string{
@@ -94,6 +91,7 @@ var assemblySegmentNotations = map[string]string{
 	"static":   "16",
 	"this":     "THIS",
 	"that":     "THAT",
+	"temp":     "Temp",
 }
 
 var pointerSegments = map[string]string{

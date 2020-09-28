@@ -18,20 +18,43 @@ func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, in
 	}
 
 	var assemblyCommand string
+	var existsArithmeticLabelGreatherThan bool = false
 
 	for _, vmCommand := range parsedCommands {
 		commandType := vmCommand.CommandType
 		firstCommandArg := vmCommand.Args[0]
+		var baseAssemblySnippet string
+
+		if !existsArithmeticLabelGreatherThan && firstCommandArg == "eq" || firstCommandArg == "lt" || firstCommandArg == "gt" {
+			baseAssemblySnippet = baseAssemblySnippet + arithmeticLabelGreatherThan()
+			existsArithmeticLabelGreatherThan = true
+		}
+
+		baseAssemblySnippet = baseAssemblySnippet + "//" + commandType + " " + firstCommandArg
 
 		switch commandType {
 		case "C_PUSH":
 			fallthrough
 		case "C_POP":
 			secondCommandArg := vmCommand.Args[1]
+			baseAssemblySnippet = baseAssemblySnippet + " " + secondCommandArg
 
-			assemblyCommand = memoryCommands[commandType][firstCommandArg](firstCommandArg, secondCommandArg)
+			if firstCommandArg == "static" {
+				assemblyCommand = memoryCommands[commandType][firstCommandArg](inputFileName, secondCommandArg)
+			} else {
+				assemblyCommand = memoryCommands[commandType][firstCommandArg](firstCommandArg, secondCommandArg)
+			}
+
+		case "C_ARITHMETIC":
+			assemblyCommand = arithmeticCommands[firstCommandArg]()
 		}
-		outputFile.WriteString(assemblyCommand)
+
+		baseAssemblySnippet = baseAssemblySnippet + "\n"
+		baseAssemblySnippet = baseAssemblySnippet + assemblyCommand
+		if firstCommandArg == "add" || firstCommandArg == "sub" || firstCommandArg == "neg" || firstCommandArg == "eq" {
+			outputFile.WriteString(baseAssemblySnippet)
+		}
+
 	}
 
 	outputFile.Close()
