@@ -1,0 +1,30 @@
+// 0 C_PUSH constant 7
+(SIMPLEADD0)
+@7
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// 1 C_PUSH constant 8
+(SIMPLEADD1)
+@8
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+// 2 C_ARITHMETIC add
+(SIMPLEADD2)
+@SP
+A=M-1
+D=M
+A=A-1
+M=M+D
+@SP
+M=M-1
+(END)
+@END
+0;JMP

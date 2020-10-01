@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"os"
-	"path"
+	"strings"
 )
 
 // ParsedCommand represents decomposed commands and their argument(s), as extracted from input file lines
@@ -14,9 +14,9 @@ type ParsedCommand struct {
 }
 
 // Parser parses a vm file, cleans its lines (remove whitespace, comments) and stores commands and arguments
-func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
-	folderPath := "./data/vm-files/"
-	filePath := path.Join(folderPath, fileName+".vm")
+func Parser(filePath string) (parsedCommands []ParsedCommand, err error) {
+
+	fileName := GetFileName(filePath)
 
 	f, err := os.Open(filePath)
 
@@ -58,4 +58,13 @@ func Parser(fileName string) (parsedCommands []ParsedCommand, err error) {
 	}
 
 	return parsedCommands, nil
+}
+
+// GetFileName extracts file name from path
+func GetFileName(filePath string) string {
+	splitInputPath := strings.Split(filePath, "/")
+
+	inputFileNameAndExtension := splitInputPath[len(splitInputPath)-1]
+
+	return strings.Split(inputFileNameAndExtension, ".")[0]
 }

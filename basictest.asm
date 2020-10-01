@@ -1,4 +1,5 @@
-//C_PUSH constant 10
+// 0 C_PUSH constant 10
+(BASICTEST0)
 @10
 D=A
 @SP
@@ -6,7 +7,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP local 0
+// 1 C_POP local 0
+(BASICTEST1)
 @SP
 M=M-1
 A=M
@@ -14,7 +16,8 @@ D=M
 @LCL
 A=M
 M=D
-//C_PUSH constant 21
+// 2 C_PUSH constant 21
+(BASICTEST2)
 @21
 D=A
 @SP
@@ -22,7 +25,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_PUSH constant 22
+// 3 C_PUSH constant 22
+(BASICTEST3)
 @22
 D=A
 @SP
@@ -30,7 +34,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP argument 2
+// 4 C_POP argument 2
+(BASICTEST4)
 @SP
 M=M-1
 A=M
@@ -40,7 +45,8 @@ A=M
 A=A+1
 A=A+1
 M=D
-//C_POP argument 1
+// 5 C_POP argument 1
+(BASICTEST5)
 @SP
 M=M-1
 A=M
@@ -49,7 +55,8 @@ D=M
 A=M
 A=A+1
 M=D
-//C_PUSH constant 36
+// 6 C_PUSH constant 36
+(BASICTEST6)
 @36
 D=A
 @SP
@@ -57,7 +64,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP this 6
+// 7 C_POP this 6
+(BASICTEST7)
 @SP
 M=M-1
 A=M
@@ -71,7 +79,8 @@ A=A+1
 A=A+1
 A=A+1
 M=D
-//C_PUSH constant 42
+// 8 C_PUSH constant 42
+(BASICTEST8)
 @42
 D=A
 @SP
@@ -79,7 +88,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_PUSH constant 45
+// 9 C_PUSH constant 45
+(BASICTEST9)
 @45
 D=A
 @SP
@@ -87,7 +97,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP that 5
+// 10 C_POP that 5
+(BASICTEST10)
 @SP
 M=M-1
 A=M
@@ -100,7 +111,8 @@ A=A+1
 A=A+1
 A=A+1
 M=D
-//C_POP that 2
+// 11 C_POP that 2
+(BASICTEST11)
 @SP
 M=M-1
 A=M
@@ -110,7 +122,8 @@ A=M
 A=A+1
 A=A+1
 M=D
-//C_PUSH constant 510
+// 12 C_PUSH constant 510
+(BASICTEST12)
 @510
 D=A
 @SP
@@ -118,14 +131,16 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP temp 6
+// 13 C_POP temp 6
+(BASICTEST13)
 @SP
 M=M-1
 A=M
 D=M
 @Temp6
 M=D
-//C_PUSH local 0
+// 14 C_PUSH local 0
+(BASICTEST14)
 @LCL
 A=M
 D=M
@@ -134,7 +149,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_PUSH that 5
+// 15 C_PUSH that 5
+(BASICTEST15)
 @THAT
 A=M
 A=A+1
@@ -148,7 +164,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC add
+// 16 C_ARITHMETIC add
+(BASICTEST16)
 @SP
 A=M-1
 D=M
@@ -156,7 +173,8 @@ A=A-1
 M=M+D
 @SP
 M=M-1
-//C_PUSH argument 1
+// 17 C_PUSH argument 1
+(BASICTEST17)
 @ARG
 A=M
 A=A+1
@@ -166,7 +184,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC sub
+// 18 C_ARITHMETIC sub
+(BASICTEST18)
 @SP
 A=M-1
 D=M
@@ -174,7 +193,8 @@ A=A-1
 M=M-D
 @SP
 M=M-1
-//C_PUSH this 6
+// 19 C_PUSH this 6
+(BASICTEST19)
 @THIS
 A=M
 A=A+1
@@ -189,7 +209,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_PUSH this 6
+// 20 C_PUSH this 6
+(BASICTEST20)
 @THIS
 A=M
 A=A+1
@@ -204,7 +225,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC add
+// 21 C_ARITHMETIC add
+(BASICTEST21)
 @SP
 A=M-1
 D=M
@@ -212,7 +234,8 @@ A=A-1
 M=M+D
 @SP
 M=M-1
-//C_ARITHMETIC sub
+// 22 C_ARITHMETIC sub
+(BASICTEST22)
 @SP
 A=M-1
 D=M
@@ -220,7 +243,8 @@ A=A-1
 M=M-D
 @SP
 M=M-1
-//C_PUSH temp 6
+// 23 C_PUSH temp 6
+(BASICTEST23)
 @Temp0
 A=A+1
 A=A+1
@@ -234,7 +258,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC add
+// 24 C_ARITHMETIC add
+(BASICTEST24)
 @SP
 A=M-1
 D=M
@@ -242,3 +267,6 @@ A=A-1
 M=M+D
 @SP
 M=M-1
+(END)
+@END
+0;JMP

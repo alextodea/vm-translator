@@ -23,14 +23,19 @@ var arithmeticComparisonCommands = map[string]func(numberOfCommandsLeft, command
 func handleComparisonCommands(numberOfCommandsLeft, commandCounter int, inputFileName, firstCommandArg, commandCounterString string) string {
 	inputFileNameToUpperLetters := strings.ToUpper(inputFileName)
 	assemblyCommand := "@SP\nM=M-1\nA=M\nD=M\nA=A-1\nD=M-D\n"
-	var assemblyComparisonBody string
+	var jmp string
+
 	switch firstCommandArg {
 	case "eq":
-		jmp := "D;JEQ\n"
-		assemblyComparisonBody = addComparisonBody(inputFileNameToUpperLetters, commandCounterString, jmp, numberOfCommandsLeft)
-		assemblyCommand += assemblyComparisonBody
+		jmp = "D;JEQ\n"
+	case "gt":
+		jmp = "D;JGT\n"
+	case "lt":
+		jmp = "D;JLT\n"
 	}
 
+	assemblyComparisonBody := addComparisonBody(inputFileNameToUpperLetters, commandCounterString, jmp, numberOfCommandsLeft)
+	assemblyCommand += assemblyComparisonBody
 	return assemblyCommand
 }
 

@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
-	inputFileName := os.Args[1]
-	parsedCommands, err := parser.Parser(inputFileName)
+	parsedCommands, err := parser.Parser(os.Args[1])
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	inputFileName := parser.GetFileName(os.Args[1])
 	err = codeWriter.TranslateVMInstructionsToAssembly(parsedCommands, inputFileName)
 
 	if err != nil {
