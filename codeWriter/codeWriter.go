@@ -3,6 +3,9 @@ package codewriter
 
 import (
 	"os"
+	"strings"
+
+	"strconv"
 
 	parser "github.com/alextodea/vm-translator/parser"
 )
@@ -18,46 +21,65 @@ func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, in
 		return err
 	}
 
-	var assemblyCommand string
-	var existsArithmeticLabelGreatherThan bool = false
+	numberOfCommandsLeft := len(parsedCommands)
 
-	for _, vmCommand := range parsedCommands {
+	for commandCounter, vmCommand := range parsedCommands {
+		numberOfCommandsLeft--
 		commandType := vmCommand.CommandType
 		firstCommandArg := vmCommand.Args[0]
-		var baseAssemblySnippet string
 
-		if !existsArithmeticLabelGreatherThan && firstCommandArg == "eq" || firstCommandArg == "lt" || firstCommandArg == "gt" {
-			baseAssemblySnippet = baseAssemblySnippet + arithmeticLabelGreatherThan()
-			existsArithmeticLabelGreatherThan = true
-		}
+		// assembly command base
+		var assemblyCommand string
+		commandCounterString := strconv.Itoa(commandCounter)
 
-		baseAssemblySnippet = baseAssemblySnippet + "//" + commandType + " " + firstCommandArg
+		// first line of assembly command
+		// it is a commented line that denotes the command in vm language, as well as command counter
+		assemblyCommandCommentedLine := addAssemblyCommandCommentedLine(vmCommand, commandCounterString)
+		assemblyCommand += assemblyCommandCommentedLine
 
-		switch commandType {
-		case "C_PUSH":
-			fallthrough
-		case "C_POP":
-			secondCommandArg := vmCommand.Args[1]
-			baseAssemblySnippet = baseAssemblySnippet + " " + secondCommandArg
+		// assembly command label declaration (XXX)
+		assemblyCommandLabelDeclaration := addAssemblyCommandLabelDeclaration(inputFileName, commandCounterString)
+		assemblyCommand += assemblyCommandLabelDeclaration
 
-			if firstCommandArg == "static" {
-				assemblyCommand = memoryCommands[commandType][firstCommandArg](inputFileName, secondCommandArg)
+		if commandType == "C_ARITHMETIC" {
+			// if comparison command
+			if firstCommandArg == "eq" || firstCommandArg == "lt" || firstCommandArg == "gt" {
+				assemblyCommand += arithmeticComparisonCommands[firstCommandArg](numberOfCommandsLeft, commandCounter, inputFileName, firstCommandArg, commandCounterString)
 			} else {
-				assemblyCommand = memoryCommands[commandType][firstCommandArg](firstCommandArg, secondCommandArg)
+				assemblyCommand += arithmeticOperationCommands[firstCommandArg]()
 			}
-
-		case "C_ARITHMETIC":
-			assemblyCommand = arithmeticCommands[firstCommandArg]()
+		} else if commandType == "C_PUSH" || commandType == "C_POP" {
+			if firstCommandArg == "STATIC" {
+				assemblyCommand += memoryCommands[commandType][firstCommandArg](inputFileName, vmCommand.Args[1])
+			} else {
+				assemblyCommand += memoryCommands[commandType][firstCommandArg](firstCommandArg, vmCommand.Args[1])
+			}
 		}
 
-		baseAssemblySnippet = baseAssemblySnippet + "\n"
-		baseAssemblySnippet = baseAssemblySnippet + assemblyCommand
-		if firstCommandArg == "add" || firstCommandArg == "sub" || firstCommandArg == "neg" || firstCommandArg == "eq" {
-			outputFile.WriteString(baseAssemblySnippet)
+		if numberOfCommandsLeft == 0 {
+			assemblyCommand += "(END)\n@END\n0;JMP\n"
 		}
+
+		outputFile.WriteString(assemblyCommand)
 
 	}
 
 	outputFile.Close()
 	return nil
+}
+
+func addAssemblyCommandLabelDeclaration(fileName, commandCounterString string) string {
+	inputFileNameToUpperLetters := strings.ToUpper(fileName)
+	assemblyCommandLabelDeclaration := "\n(" + inputFileNameToUpperLetters + commandCounterString + ")" + "\n"
+	return assemblyCommandLabelDeclaration
+}
+
+func addAssemblyCommandCommentedLine(vmCommand parser.ParsedCommand, commandCounterString string) string {
+	assemblyCommandCommentedLine := "//" + " " + commandCounterString + " " + vmCommand.CommandType
+
+	for _, vmCommandArg := range vmCommand.Args {
+		assemblyCommandCommentedLine += " " + vmCommandArg
+	}
+
+	return assemblyCommandCommentedLine
 }

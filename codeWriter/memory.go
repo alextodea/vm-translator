@@ -1,5 +1,7 @@
 package codewriter
 
+import "strconv"
+
 var memoryCommands = map[string]map[string]func(string, string) string{
 	"C_PUSH": {
 		"constant": pushConstant,
@@ -30,8 +32,17 @@ func popStatic(fileName, index string) string {
 }
 
 func popMemorySegment(segmentName string, index string) string {
-	moveValueFromDataRegisterToSegmentAddress := "@" + assemblySegmentNotations[segmentName] + "\nA=A+" + index + "\nM=D\n"
-	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToSegmentAddress
+	pointAtSegmentBaseAddress := "@" + assemblySegmentNotations[segmentName] + "\nA=M\n"
+	segmentAddressOffsetByOne := "A=A+1\n"
+
+	segmentAsInteger, _ := strconv.Atoi(index)
+
+	if segmentAsInteger > 0 {
+		for i := 0; i < segmentAsInteger; i++ {
+			pointAtSegmentBaseAddress = pointAtSegmentBaseAddress + segmentAddressOffsetByOne
+		}
+	}
+	return moveValueFromStackToDataRegister() + pointAtSegmentBaseAddress + "M=D\n"
 }
 
 func popTemp(segmentName string, index string) string {
@@ -67,13 +78,32 @@ func pushPointer(segmentName string, index string) string {
 }
 
 func pushTemp(segmentName string, index string) string {
-	storeTempValueToDataRegister := "@" + assemblySegmentNotations[segmentName] + index + "\nD=M\n"
-	return storeTempValueToDataRegister + moveValueFromDataRegisterToStack()
+	tempBaseAddress := "@Temp0\n"
+	segmentAddressOffsetByOne := "A=A+1\n"
+
+	segmentAsInteger, _ := strconv.Atoi(index)
+
+	if segmentAsInteger > 0 {
+		for i := 0; i < segmentAsInteger; i++ {
+			tempBaseAddress = tempBaseAddress + segmentAddressOffsetByOne
+		}
+	}
+
+	return tempBaseAddress + "D=M\n" + moveValueFromDataRegisterToStack()
 }
 
 func pushMemorySegment(segmentName string, segmentIndex string) string {
-	moveValueFromMemorySegmentToDataRegister := "@" + assemblySegmentNotations[segmentName] + "\nA=A+" + segmentIndex + "\nD=M\n"
-	return moveValueFromMemorySegmentToDataRegister + moveValueFromDataRegisterToStack()
+	pointAtSegmentBaseAddress := "@" + assemblySegmentNotations[segmentName] + "\nA=M\n"
+	segmentAddressOffsetByOne := "A=A+1\n"
+
+	segmentAsInteger, _ := strconv.Atoi(segmentIndex)
+
+	if segmentAsInteger > 0 {
+		for i := 0; i < segmentAsInteger; i++ {
+			pointAtSegmentBaseAddress = pointAtSegmentBaseAddress + segmentAddressOffsetByOne
+		}
+	}
+	return pointAtSegmentBaseAddress + "D=M\n" + moveValueFromDataRegisterToStack()
 }
 
 func moveValueFromDataRegisterToStack() string {
