@@ -45,11 +45,6 @@ func popMemorySegment(segmentName string, index string) string {
 	return moveValueFromStackToDataRegister() + pointAtSegmentBaseAddress + "M=D\n"
 }
 
-func popTemp(segmentName string, index string) string {
-	moveValueFromDataRegisterToTempAddress := "@" + assemblySegmentNotations[segmentName] + index + "\nM=D\n"
-	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToTempAddress
-}
-
 func popPointer(segmentName string, index string) string {
 	moveValueFromDataRegisterToPointerAddress := "@" + pointerSegments[index] + "\nM=D\n"
 	return moveValueFromStackToDataRegister() + moveValueFromDataRegisterToPointerAddress
@@ -77,8 +72,23 @@ func pushPointer(segmentName string, index string) string {
 	return moveValueFromMemorySegmentToDataRegister + moveValueFromDataRegisterToStack()
 }
 
+func popTemp(segmentName string, index string) string {
+	tempBaseAddress := "@5\n"
+	segmentAddressOffsetByOne := "A=A+1\n"
+
+	segmentAsInteger, _ := strconv.Atoi(index)
+
+	if segmentAsInteger > 0 {
+		for i := 0; i < segmentAsInteger; i++ {
+			tempBaseAddress += segmentAddressOffsetByOne
+		}
+	}
+
+	return moveValueFromStackToDataRegister() + tempBaseAddress + "M=D\n"
+}
+
 func pushTemp(segmentName string, index string) string {
-	tempBaseAddress := "@Temp0\n"
+	tempBaseAddress := "@5\n"
 	segmentAddressOffsetByOne := "A=A+1\n"
 
 	segmentAsInteger, _ := strconv.Atoi(index)

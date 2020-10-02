@@ -137,7 +137,13 @@ M=M+1
 M=M-1
 A=M
 D=M
-@Temp6
+@5
+A=A+1
+A=A+1
+A=A+1
+A=A+1
+A=A+1
+A=A+1
 M=D
 // 14 C_PUSH local 0
 (BASICTEST14)
@@ -245,7 +251,7 @@ M=M-D
 M=M-1
 // 23 C_PUSH temp 6
 (BASICTEST23)
-@Temp0
+@5
 A=A+1
 A=A+1
 A=A+1

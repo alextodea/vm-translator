@@ -463,8 +463,7 @@ M=M|D
 // 37 C_ARITHMETIC not
 (STACKTEST37)
 @SP
-M=M-1
-A=M
+A=M-1
 M=!M
 (END)
 @END

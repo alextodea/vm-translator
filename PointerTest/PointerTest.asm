@@ -1,4 +1,5 @@
-//C_PUSH constant 3030
+// 0 C_PUSH constant 3030
+(POINTERTEST0)
 @3030
 D=A
 @SP
@@ -6,14 +7,16 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP pointer 0
+// 1 C_POP pointer 0
+(POINTERTEST1)
 @SP
 M=M-1
 A=M
 D=M
 @THIS
 M=D
-//C_PUSH constant 3040
+// 2 C_PUSH constant 3040
+(POINTERTEST2)
 @3040
 D=A
 @SP
@@ -21,14 +24,16 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP pointer 1
+// 3 C_POP pointer 1
+(POINTERTEST3)
 @SP
 M=M-1
 A=M
 D=M
 @THAT
 M=D
-//C_PUSH constant 32
+// 4 C_PUSH constant 32
+(POINTERTEST4)
 @32
 D=A
 @SP
@@ -36,7 +41,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP this 2
+// 5 C_POP this 2
+(POINTERTEST5)
 @SP
 M=M-1
 A=M
@@ -46,7 +52,8 @@ A=M
 A=A+1
 A=A+1
 M=D
-//C_PUSH constant 46
+// 6 C_PUSH constant 46
+(POINTERTEST6)
 @46
 D=A
 @SP
@@ -54,7 +61,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_POP that 6
+// 7 C_POP that 6
+(POINTERTEST7)
 @SP
 M=M-1
 A=M
@@ -68,7 +76,8 @@ A=A+1
 A=A+1
 A=A+1
 M=D
-//C_PUSH pointer 0
+// 8 C_PUSH pointer 0
+(POINTERTEST8)
 @THIS
 D=M
 @SP
@@ -76,7 +85,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_PUSH pointer 1
+// 9 C_PUSH pointer 1
+(POINTERTEST9)
 @THAT
 D=M
 @SP
@@ -84,7 +94,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC add
+// 10 C_ARITHMETIC add
+(POINTERTEST10)
 @SP
 A=M-1
 D=M
@@ -92,7 +103,8 @@ A=A-1
 M=M+D
 @SP
 M=M-1
-//C_PUSH this 2
+// 11 C_PUSH this 2
+(POINTERTEST11)
 @THIS
 A=M
 A=A+1
@@ -103,7 +115,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC sub
+// 12 C_ARITHMETIC sub
+(POINTERTEST12)
 @SP
 A=M-1
 D=M
@@ -111,7 +124,8 @@ A=A-1
 M=M-D
 @SP
 M=M-1
-//C_PUSH that 6
+// 13 C_PUSH that 6
+(POINTERTEST13)
 @THAT
 A=M
 A=A+1
@@ -126,7 +140,8 @@ A=M
 M=D
 @SP
 M=M+1
-//C_ARITHMETIC add
+// 14 C_ARITHMETIC add
+(POINTERTEST14)
 @SP
 A=M-1
 D=M
@@ -134,3 +149,6 @@ A=A-1
 M=M+D
 @SP
 M=M-1
+(END)
+@END
+0;JMP

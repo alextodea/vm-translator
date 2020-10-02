@@ -67,7 +67,7 @@ func addComparisonLabelBody(inputFileNameToUpperLetters, commandCounterString, t
 }
 
 func arithmeticNot() string {
-	return "@SP\nM=M-1\nA=M\nM=!M\n"
+	return "@SP\nA=M-1\nM=!M\n"
 }
 
 func arithmeticOr() string {
