@@ -3,6 +3,7 @@ package codewriter
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	"strconv"
@@ -11,15 +12,16 @@ import (
 )
 
 // TranslateVMInstructionsToAssembly translates VM commands into Hack assembly code.
-func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, inputFileName string) (err error) {
+func TranslateVMInstructionsToAssembly(parsedCommands []parser.ParsedCommand, inputFilePath string) (err error) {
+	targetFilePathWithoutExtension := strings.Split(inputFilePath, ".")[0]
+	targetFilePath := targetFilePathWithoutExtension + ".asm"
 
-	outputFileNameAndExtension := inputFileName + ".asm"
-	outputFile, err := os.Create(outputFileNameAndExtension)
-
-	if err != nil {
-		outputFile.Close()
+	if err := os.MkdirAll(filepath.Dir(targetFilePath), 0770); err != nil {
 		return err
 	}
+
+	outputFile, err := os.Create(targetFilePath)
+	inputFileName := parser.GetFileName(inputFilePath)
 
 	numberOfCommandsLeft := len(parsedCommands)
 
